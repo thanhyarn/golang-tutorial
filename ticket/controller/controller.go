@@ -517,29 +517,32 @@ func DeleteTicket(w http.ResponseWriter, r *http.Request) {
 
 // createSubtickets creates sub-tickets for a given parent ticket in MongoDB.
 func createSubtickets(parentTicketID primitive.ObjectID, subTickets []model.Ticket) error {
-	// Set creation and update time for each sub-ticket
-	currentTime := time.Now()
-	for i := range subTickets {
-		subTickets[i].CreatedAt = currentTime
-		subTickets[i].UpdatedAt = currentTime
-	}
+    // Set creation and update time for each sub-ticket
+    currentTime := time.Now()
+    for i := range subTickets {
+        subTickets[i].CreatedAt = currentTime
+        subTickets[i].UpdatedAt = currentTime
+       // subTickets[i].ParentTicketID = parentTicketID // Set the ParentTicketID for each sub-ticket
+    }
 
-	// Convert the slice of model.Ticket to slice of interface{}
-	var interfaceSlice []interface{}
-	for _, ticket := range subTickets {
-   	 interfaceSlice = append(interfaceSlice, ticket)
-	}
+    // Convert the slice of model.Ticket to slice of interface{}
+    var interfaceSlice []interface{}
+    for _, ticket := range subTickets {
+        interfaceSlice = append(interfaceSlice, ticket)
+    }
 
-// Perform the insert operation in MongoDB
-_, err := collection.InsertMany(context.Background(), interfaceSlice)
-	if err != nil {
-		log.Println("Failed to create sub-tickets:", err)
-		return err
-	}
+    // Perform the insert operation in MongoDB
+    _, err := collection.InsertMany(context.Background(), interfaceSlice)
+    if err != nil {
+        log.Println("Failed to create sub-tickets:", err)
+        return err
+    }
 
-	log.Println("Sub-tickets created successfully.")
-	return nil
+    log.Println("Sub-tickets created successfully.")
+    return nil
 }
+
+
 
 // CreateSubtickets handles the HTTP POST request to create sub-tickets.
 func CreateSubtickets(w http.ResponseWriter, r *http.Request) {
